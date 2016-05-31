@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Button Counter</title>
+    </head>
+    <body>
+        <h3>Click the button!</h3>
+    <script>
+    var ncp = document.createElement('img');
+    ncp.src = "http://static.awkwardfamilyphotos.com/wp-content/uploads/cache/2009/08/rob-twocats-e1364746424945/1786147598.jpg"
+    ncp.style.display = 'none';
+
+    var port = window.location.port ?':' + window.location.port : '';
+    var url = 'ws:' + window.location.hostname + '/clicks';
+    var ws = new WebSocket(url);
+
+    var message = document.createElement('div');
+    var count = document.createTextNode("");
+    message.appendChild(count);
+    ws.onmessage = function(event) {
+        if (event.data === 'long') {
+            message.style.display = 'none';
+            ncp.style.display = 'block';
+        } else {
+            count.nodeValue = event.data;
+            message.style.display = 'block';
+            ncp.style.display = 'none';
+        }
+    }
+
+    document.body.appendChild(message);
+    document.body.appendChild(ncp);
+    </script>
+    </body>
+</html

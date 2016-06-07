@@ -4,12 +4,30 @@ import asyncio
 from aiohttp import web
 import aiohttp
 import json
+from datetime import datetime
 
 CONTENT = open('index.html').read().encode('utf8')
 
 connected = set()
 
+last_clicked_at = None
 last_click = None
+count = 0
+
+def register_click(click_type):
+    global last_clicked_at
+    global last_click
+    global count
+
+    last_clicked_at = datetime.now()
+    last_click = click_type
+
+    if click_type == 'single':
+        count += 1
+    elif click_type == 'double':
+        count += 2
+    elif click_type == 'long':
+        count += 1.5
 
 async def index(request):
     return web.Response(body=CONTENT)
@@ -17,7 +35,7 @@ async def index(request):
 async def clicked(request):
     global last_click
     click_type = request.GET.get('type', 'single')
-    last_click = click_type
+    register_click(click_type)
     print("received click {}".format(last_click))
     return web.Response()
 
@@ -32,7 +50,7 @@ async def snsclicked(request):
     else:
         msg = data['Subject']
         click_type = msg.split(': ')[1].lower()
-        last_click = click_type
+        register_click(click_type)
         print("received click {}".format(last_click))
 
     return web.Response()
@@ -46,13 +64,15 @@ async def clicks(request):
 
         await ws.prepare(request)
 
-        local_click = last_click
-        while True:
-            if local_click != last_click:
-                local_click = last_click
-                ws.send_str(last_click)
-            await asyncio.sleep(1)
+        ws.send_str(last_click or '')
 
+        local_clicked_at = last_clicked_at
+        while True:
+            if local_clicked_at != last_clicked_at:
+                local_clicked_at = last_clicked_at
+                response = {'type': last_click, 'clicks': count}
+                ws.send_str(json.dumps(response))
+            await asyncio.sleep(1)
     finally:
         print("disconnected")
         connected.remove(ws)

@@ -11,18 +11,24 @@
     ncp.style.display = 'none';
 
     var port = window.location.port ?':' + window.location.port : '';
-    var url = 'ws:' + window.location.hostname + '/clicks';
+    var url = 'ws:' + window.location.host + '/clicks';
     var ws = new WebSocket(url);
 
     var message = document.createElement('div');
-    var count = document.createTextNode("");
+    var count = document.createTextNode('');
     message.appendChild(count);
     ws.onmessage = function(event) {
-        if (event.data === 'long') {
+        if (!event.data) {
+            return;
+        }
+
+        data = JSON.parse(event.data);
+
+        if (data.type === 'long') {
             message.style.display = 'none';
             ncp.style.display = 'block';
         } else {
-            count.nodeValue = event.data;
+            count.nodeValue = data.type + ": " + data.clicks + " clicks!";
             message.style.display = 'block';
             ncp.style.display = 'none';
         }

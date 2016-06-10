@@ -46,7 +46,7 @@ async def snsclicked(request):
     data = json.loads(body)
 
     if 'SubscribeURL' in data:
-        print("Confirm subscription at: {}").format(data['SubscribeURL'])
+        print("Confirm subscription at: {}".format(data['SubscribeURL']))
     else:
         msg = data['Subject']
         click_type = msg.split(': ')[1].lower()

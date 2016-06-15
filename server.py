@@ -12,7 +12,7 @@ connected = set()
 
 last_clicked_at = None
 last_click = None
-count = 0
+count = 42.5
 
 def register_click(click_type):
     global last_clicked_at
@@ -64,7 +64,10 @@ async def clicks(request):
 
         await ws.prepare(request)
 
-        ws.send_str(last_click or '')
+        # ws.send_str(json.dumps({
+        #     'type': last_click,
+        #     'clicks': count
+        # }))
 
         local_clicked_at = last_clicked_at
         while True:

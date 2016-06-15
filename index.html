@@ -10,7 +10,6 @@
     ncp.src = "https://img.buzzfeed.com/buzzfeed-static/static/2014-09/29/11/enhanced/webdr01/enhanced-14372-1412006291-10.jpg"
     ncp.style.display = 'none';
 
-    var port = window.location.port ?':' + window.location.port : '';
     var url = 'ws:' + window.location.host + '/clicks';
     var ws = new WebSocket(url);
 
@@ -28,7 +27,13 @@
             message.style.display = 'none';
             ncp.style.display = 'block';
         } else {
-            count.nodeValue = data.type + ": " + data.clicks + " clicks!";
+            var msg = data.type + ": " + data.clicks + " clicks!";
+            if (data.type === 'single') {
+                msg = msg + ' feed the dog!';
+            } else {
+                msg = msg + ' disco Teyla!';
+            }
+            count.nodeValue = msg;
             message.style.display = 'block';
             ncp.style.display = 'none';
         }
